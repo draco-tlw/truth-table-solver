@@ -63,16 +63,16 @@
 
 .inputField > button,
 .outputField > button {
-  @media screen and (max-width: 576px) {
-    width: 100%;
-  }
-
   padding: 0.5rem 1rem;
   border-radius: 1rem;
   border: none;
   color: $light;
   font-size: 0.8rem;
   text-transform: uppercase;
+
+  @media screen and (max-width: 576px) {
+    width: 100%;
+  }
 }
 .inputField > button:hover,
 .outputField > button:hover {
