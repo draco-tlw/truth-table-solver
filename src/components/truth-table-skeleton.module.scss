@@ -1,0 +1,48 @@
+.truthTableSkeleton {
+  position: relative;
+  margin-top: 2rem;
+}
+.truthTableSkeleton > h3 {
+  font-weight: 500;
+}
+
+.truthTableSkeleton > table {
+  filter: blur(4px);
+  overflow-x: scroll;
+  margin: 1rem 0;
+  width: 100%;
+  border-collapse: collapse;
+}
+.truthTableSkeleton > table td {
+  padding: 0.5rem 1rem;
+  text-align: center;
+  color: $light;
+}
+
+.truthTableSkeleton > table td {
+  border-top: 2px solid $primary;
+  border-left: 2px solid $primary;
+}
+.truthTableSkeleton > table > thead td {
+  border-top: none;
+  color: $primary;
+}
+.truthTableSkeleton > table td:first-child {
+  border-left: none;
+  width: 0%;
+}
+.truthTableSkeleton .loadingContainer {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.truthTableSkeleton .loadingLabel {
+  position: absolute;
+  font-size: 1.5rem;
+  color: $primary;
+}

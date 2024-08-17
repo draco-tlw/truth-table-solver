@@ -1,0 +1,75 @@
+.qmcTables {
+  background-color: rgba($orange, 0.25);
+  margin: 1rem 0;
+  padding: 1rem;
+  border-radius: 1rem;
+}
+
+.qmcTableContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+
+  @media screen and (max-width: 992px) {
+    flex-direction: column;
+  }
+  overflow: hidden;
+}
+
+.title {
+  font-weight: 500;
+  color: $orange;
+}
+
+.qmcTable {
+  width: calc(50% - 0.5rem);
+  @media screen and (max-width: 992px) {
+    width: 100%;
+  }
+  margin-top: 1.5rem;
+}
+
+.tableHeader {
+  font-weight: 400;
+  font-size: 1.5rem;
+  text-align: center;
+  background-color: $orange;
+  color: $light;
+  padding: 0.5rem;
+}
+.columnHeader {
+  width: 100%;
+  border: 2px solid $orange;
+  border-top: none;
+  padding: 0.5rem;
+  text-align: center;
+  color: $orange;
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.columnBody {
+  overflow: scroll;
+}
+.columnBody::-webkit-scrollbar {
+  display: none;
+}
+
+.columnBody > table {
+  border-collapse: collapse;
+  width: 100%;
+}
+.columnBody > table > thead > tr > td {
+  border-top: none;
+  text-wrap: nowrap;
+}
+
+.columnBody > table td {
+  padding: 0.5rem;
+  text-align: center;
+  border: 2px solid $orange;
+}
+.columnBody > table > thead td {
+  font-weight: bold;
+  color: $orange;
+}

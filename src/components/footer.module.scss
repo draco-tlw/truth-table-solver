@@ -1,0 +1,30 @@
+.footer {
+  background-color: $primary;
+  color: $light;
+  text-align: center;
+  padding: 0.5rem;
+}
+
+.copyrights,
+.contactMeLinks {
+  padding: 0.5rem 0;
+}
+.contactMeLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.contactMeLinks > a {
+  display: flex;
+  gap: 0.25rem;
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.contactMeLinks .icon svg {
+  margin-bottom: -0.1rem;
+}

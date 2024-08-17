@@ -1,0 +1,27 @@
+.collapseBox {
+  overflow: hidden;
+  height: 0;
+  transition: height 300ms ease;
+}
+
+.equations {
+  margin-top: 2rem;
+  background-color: rgba($success, 0.25);
+  padding: 1rem;
+  border-radius: 1rem;
+}
+
+.equations > h3 {
+  color: $success;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+.equation {
+  font-size: 2rem;
+  padding: 0.5rem 1rem;
+  margin: 0.5rem 0;
+}
+
+.supplement {
+  border-top: 2px solid;
+}

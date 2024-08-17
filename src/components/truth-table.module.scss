@@ -1,0 +1,62 @@
+.truthTable {
+  margin-top: 2rem;
+}
+.truthTable > h3 {
+  font-weight: 500;
+}
+
+.truthTable > .tableContainer {
+  overflow-x: scroll;
+}
+.truthTable > .tableContainer::-webkit-scrollbar {
+  display: none;
+}
+
+.truthTable > .tableContainer > table {
+  margin: 1rem 0;
+  width: 100%;
+  border-collapse: collapse;
+}
+.truthTable > .tableContainer table td {
+  padding: 0.5rem 1rem;
+  text-align: center;
+}
+
+.truthTable > .tableContainer table td {
+  border-top: 2px solid $primary;
+  border-left: 2px solid $primary;
+}
+.truthTable > .tableContainer table > tbody tr:hover {
+  background-color: rgba($primary, 0.25);
+}
+.truthTable > .tableContainer table > thead td {
+  border-top: none;
+  color: $primary;
+}
+.truthTable > .tableContainer table td:first-child {
+  border-left: none;
+  width: 0%;
+}
+.outputBit {
+  color: $success;
+  transition: background-color 100ms ease;
+}
+.outputBit:hover {
+  background-color: $success;
+  color: $light;
+}
+.solveButtonContainer {
+  text-align: end;
+}
+.solveButtonContainer > button {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  border: none;
+  border-radius: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: $primary;
+  color: $light;
+}
+.solveButtonContainer > button:hover {
+  filter: brightness(0.8);
+}

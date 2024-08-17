@@ -1,0 +1,164 @@
+.generateTable {
+  background-color: #bdd6fa;
+  padding: 1rem;
+  border-radius: 1rem;
+}
+.generateTable > h3 {
+  color: $primary;
+  font-weight: 500;
+}
+
+.inputOutputBox {
+  margin: 1rem 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.inputBox,
+.outputBox {
+  flex-grow: 1;
+}
+.inputBoxTitle,
+.outputBoxTitle {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.inputField,
+.outputField {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.inputField > input,
+.outputField > input {
+  flex-grow: 1;
+  background-color: transparent;
+  border: 2px solid;
+  border-radius: 1rem;
+  font-size: 0.8rem;
+  padding: 0.5rem 1rem;
+  outline: none;
+}
+
+.inputField > input {
+  border-color: $orange;
+}
+.inputField > input:focus-within {
+  outline: 1px solid $orange;
+}
+.inputField > input::placeholder {
+  color: rgba($orange, 0.5);
+}
+
+.outputField > input {
+  border-color: $success;
+}
+.outputField > input:focus-within {
+  outline: 1px solid $success;
+}
+.outputField > input::placeholder {
+  color: rgba($success, 0.5);
+}
+
+.inputField > button,
+.outputField > button {
+  @media screen and (max-width: 576px) {
+    width: 100%;
+  }
+
+  padding: 0.5rem 1rem;
+  border-radius: 1rem;
+  border: none;
+  color: $light;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+}
+.inputField > button:hover,
+.outputField > button:hover {
+  filter: brightness(0.8);
+}
+
+.inputField > button {
+  background-color: $orange;
+}
+.outputField > button {
+  background-color: $success;
+}
+
+.inputField > button:disabled,
+.outputField > button:disabled {
+  filter: opacity(0.5);
+}
+
+.inputBox > table,
+.outputBox > table {
+  margin-top: 0.5rem;
+  width: 100%;
+  border-collapse: collapse;
+}
+.inputBox > table td,
+.outputBox > table td {
+  padding: 0.5rem 1rem;
+}
+
+.inputBox > table td,
+.outputBox > table td {
+  border-top: 2px solid;
+  border-left: 2px solid;
+}
+.inputBox > table td {
+  border-color: $orange;
+}
+.outputBox > table td {
+  border-color: $success;
+}
+.inputBox > table > tbody > tr:first-child > td,
+.outputBox > table > tbody > tr:first-child > td {
+  border-top: none;
+}
+.inputBox > table td:first-child,
+.outputBox > table td:first-child {
+  border-left: none;
+  text-align: center;
+}
+.inputBox > table td:first-child > .xButton,
+.outputBox > table td:first-child > .xButton {
+  display: none;
+  background-color: transparent;
+  border: none;
+  font-size: 1rem;
+}
+.inputBox > table td:first-child > .xButton:hover,
+.outputBox > table td:first-child > .xButton:hover {
+  color: red;
+}
+
+.inputBox > table td:first-child:hover > .number,
+.outputBox > table td:first-child:hover > .number {
+  display: none;
+}
+.inputBox > table td:first-child:hover > .xButton,
+.outputBox > table td:first-child:hover > .xButton {
+  display: inline-block;
+}
+
+.inputBox > table td:last-child,
+.outputBox > table td:last-child {
+  width: 100%;
+}
+
+.inputBox > .tablePlaceholder,
+.outputBox > .tablePlaceholder {
+  padding: 1rem 0.5rem;
+  font-weight: 300;
+  font-style: italic;
+}
+
+.inputBox > .tablePlaceholder {
+  color: $orange;
+}
+
+.outputBox > .tablePlaceholder {
+  color: $success;
+}
