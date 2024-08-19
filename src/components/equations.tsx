@@ -38,12 +38,12 @@ export default function Equations() {
       >
         {term.variables.map((variable, i) => (
           <Fragment key={i}>
-            {i == 0 && term.operator === "AND" && isEquationTerm(variable)
-              ? "("
-              : ""}
+            {i == 0 && term.operator == "OR" ? "(" : ""}
             {isEquationVariable(variable)
               ? variableToSpan(variable)
-              : termToSpan(variable)}
+              : isEquationTerm(variable)
+              ? termToSpan(variable)
+              : variable}
             {i !== term.variables.length - 1 ? (
               <span key={i}>
                 {term.operator === "AND" && isEquationVariable(variable)
@@ -59,9 +59,7 @@ export default function Equations() {
             ) : (
               ""
             )}
-            {i == term.variables.length - 1 &&
-            term.operator === "AND" &&
-            isEquationTerm(variable)
+            {i == term.variables.length - 1 && term.operator === "OR"
               ? ")"
               : ""}
           </Fragment>
@@ -74,27 +72,22 @@ export default function Equations() {
     return (
       <div className={styles.equation}>
         {equation.functionName + " = "}
-        {equation.terms.length == 0
-          ? "0"
-          : equation.terms.length == 1 &&
-            equation.terms[0].variables.length == 0
-          ? "1"
-          : equation.terms.map((term, i) => (
-              <Fragment key={i}>
-                {termToSpan(term)}
-                {i !== equation.terms.length - 1 ? (
-                  <span key={i}>
-                    {equation.operator === "OR"
-                      ? " + "
-                      : equation.operator === "AND"
-                      ? " . "
-                      : "XOR"}
-                  </span>
-                ) : (
-                  ""
-                )}
-              </Fragment>
-            ))}
+        {equation.terms.map((term, i) => (
+          <Fragment key={i}>
+            {termToSpan(term)}
+            {i !== equation.terms.length - 1 ? (
+              <span key={i}>
+                {equation.operator === "OR"
+                  ? " + "
+                  : equation.operator === "AND"
+                  ? " . "
+                  : "XOR"}
+              </span>
+            ) : (
+              ""
+            )}
+          </Fragment>
+        ))}
       </div>
     );
   };

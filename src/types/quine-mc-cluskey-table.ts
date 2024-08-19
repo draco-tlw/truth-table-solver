@@ -1,4 +1,5 @@
 import { binaryWithDash } from "./binary";
+import { SolveMethod } from "./solve-method";
 
 // Quine McCluskey = QMC
 
@@ -9,7 +10,7 @@ export interface QMCCell {
 }
 
 export interface QMCGroupCell {
-  numberOf1Bit: number;
+  numberOfTargetBit: number;
   cells: QMCCell[];
 }
 
@@ -18,4 +19,7 @@ export interface QMCColumn {
   groupCells: QMCGroupCell[];
 }
 
-export type QMCTable = QMCColumn[];
+export type QMCTable = {
+  columns: QMCColumn[];
+  solveMethod: SolveMethod;
+};

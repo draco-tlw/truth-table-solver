@@ -18,8 +18,12 @@ import {
   addQMCTable,
   clearQMCTables,
 } from "../redux/features/qmc-tables-slice";
+import { useState } from "react";
+import { SolveMethod } from "../types/solve-method";
 
 export default function TruthTable() {
+  const [solveMethod, setSolveMethod] = useState<SolveMethod>("min-term");
+
   const variables = useAppSelector(selectVariables);
   const logicalFunctions = useAppSelector(selectLogicalFunctins);
   const dispatch = useAppDispatch();
@@ -88,6 +92,23 @@ export default function TruthTable() {
         </div>
 
         <div className={styles.solveButtonContainer}>
+          <select
+            name="solveMethod"
+            onChange={(e) => {
+              if (
+                e.target.value == "min-term" ||
+                e.target.value == "max-term"
+              ) {
+                setSolveMethod(e.target.value);
+                dispatch(clearEquations());
+                dispatch(clearQMCTables());
+              }
+            }}
+            value={solveMethod}
+          >
+            <option value={"min-term"}>min-term</option>
+            <option value={"max-term"}>max-term</option>
+          </select>
           <button type={"button"} onClick={handleSolve}>
             solve
           </button>
@@ -106,7 +127,11 @@ export default function TruthTable() {
     dispatch(clearEquations());
     dispatch(clearQMCTables());
     logicalFunctions.forEach((logicalFunction) => {
-      const { equation, table } = QuineMcCluskey(logicalFunction, variables);
+      const { equation, table } = QuineMcCluskey(
+        logicalFunction,
+        variables,
+        solveMethod
+      );
       dispatch(addEquation(equation));
       dispatch(addQMCTable(table));
     });

@@ -14,16 +14,20 @@ export default function QMCTables() {
       className={styles.qmcTables}
       hidden={
         qmcTables.length == 0 ||
-        qmcTables.filter((t) => t.length > 0).length == 0
+        qmcTables.filter((t) => t.columns.length > 0).length == 0
       }
     >
       <h3 className={styles.title}>Quine McCluskey Tables</h3>
       <div className={styles.qmcTableContainer}>
         {qmcTables.map((table, i) => (
-          <div className={styles.qmcTable} key={i} hidden={table.length == 0}>
+          <div
+            className={styles.qmcTable}
+            key={i}
+            hidden={table.columns.length == 0}
+          >
             <div className={styles.tableHeader}>{logicalFunctions[i].name}</div>
             <div>
-              {table.map((column, i) => (
+              {table.columns.map((column, i) => (
                 <div key={i}>
                   <div className={styles.columnHeader}>Column {i + 1}</div>
                   <div className={styles.columnBody}>
@@ -31,7 +35,11 @@ export default function QMCTables() {
                       <thead>
                         <tr>
                           <td>Group</td>
-                          <td>Min-terms</td>
+                          <td>
+                            {table.solveMethod == "min-term"
+                              ? "Min-Terms"
+                              : "Max-Terms"}
+                          </td>
                           <td>Binary</td>
                           <td>Matched</td>
                         </tr>
@@ -43,7 +51,10 @@ export default function QMCTables() {
                               <tr key={i}>
                                 {i == 0 && (
                                   <td rowSpan={group.cells.length}>
-                                    {group.numberOf1Bit}x1
+                                    {group.numberOfTargetBit}x
+                                    {table.solveMethod == "min-term"
+                                      ? "1"
+                                      : "0"}
                                   </td>
                                 )}
                                 <td>{cell.MTOrDCNumbers.join(", ")}</td>
