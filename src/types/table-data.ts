@@ -6,4 +6,30 @@ export interface RowData {
   logicalFunctions: binaryWithDoNotCare[];
 }
 
-export type TableData = RowData[];
+export interface RowGroup {
+  indexList: number[];
+  variablesList: binary[][];
+  logicalFunctions: binaryWithDoNotCare[];
+}
+
+export type TableData = (RowData | RowGroup)[];
+
+export function isRowData(obj: unknown): obj is RowData {
+  return (
+    typeof obj === "object" &&
+    obj !== null &&
+    "index" in obj &&
+    "variables" in obj &&
+    "logicalFunctions" in obj
+  );
+}
+
+export function isRowGroup(obj: unknown): obj is RowGroup {
+  return (
+    typeof obj === "object" &&
+    obj !== null &&
+    "indexList" in obj &&
+    "variablesList" in obj &&
+    "logicalFunctions" in obj
+  );
+}

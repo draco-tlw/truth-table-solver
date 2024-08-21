@@ -36,6 +36,7 @@
 .truthTable > .tableContainer table td:first-child {
   border-left: none;
   width: 0%;
+  text-wrap: nowrap;
 }
 .outputBit {
   color: $success;

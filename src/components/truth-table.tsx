@@ -1,4 +1,10 @@
-import { TableData } from "../types/table-data";
+import {
+  isRowData,
+  isRowGroup,
+  RowData,
+  RowGroup,
+  TableData,
+} from "../types/table-data";
 import TruthTableSkeleton from "./truth-table-skeleton";
 import styles from "./truth-table.module.scss";
 import QuineMcCluskey from "../utils/quine-mc-cluskey";
@@ -12,17 +18,22 @@ import {
   selectLogicalFunctins,
 } from "../redux/features/logical-functions-slice";
 import { addEquation, clearEquations } from "../redux/features/equations-slice";
-import { binaryWithDoNotCare } from "../types/binary";
+import { binary, binaryWithDoNotCare } from "../types/binary";
 import toBinary from "../utils/to-binary";
 import {
   addQMCTable,
   clearQMCTables,
 } from "../redux/features/qmc-tables-slice";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SolveMethod } from "../types/solve-method";
+import combineWithDoNotCare from "../utils/combine-with-do-not-care";
+import differentBitIndex from "../utils/different-bit-index";
+import checkBitDifferent from "../utils/check-bit-different";
+import includesElements from "../utils/includesElements";
 
 export default function TruthTable() {
   const [solveMethod, setSolveMethod] = useState<SolveMethod>("min-term");
+  const [combinedRows, setCombinedRows] = useState<number[][]>([]);
 
   const variables = useAppSelector(selectVariables);
   const logicalFunctions = useAppSelector(selectLogicalFunctins);
@@ -41,12 +52,32 @@ export default function TruthTable() {
       }
     }
 
-    table.push({
-      index,
-      variables: toBinary(index, variables.length),
-      logicalFunctions: outputRow,
-    });
+    if (!combinedRows.flat().includes(index))
+      table.push({
+        index,
+        variables: toBinary(index, variables.length),
+        logicalFunctions: outputRow,
+      });
+    else {
+      const rowsList = combinedRows.find((arr) => arr.includes(index))!;
+      if (rowsList[0] == index)
+        table.push({
+          indexList: rowsList,
+          variablesList: rowsList.map((r) => toBinary(r, variables.length)),
+          logicalFunctions: outputRow,
+        });
+    }
   }
+
+  useEffect(() => {
+    setCombinedRows((list) =>
+      list
+        .map((row) =>
+          row.filter((index) => index < Math.pow(2, variables.length))
+        )
+        .filter((row) => row.length > 0)
+    );
+  }, [variables.length]);
 
   if (variables.length > 0 && logicalFunctions.length > 0)
     return (
@@ -66,27 +97,77 @@ export default function TruthTable() {
               </tr>
             </thead>
             <tbody>
-              {table.map((element, rowIndex) => (
-                <tr key={element.index}>
-                  <td>{element.index}</td>
-                  {element.variables.map((variableValue, index) => (
-                    <td key={"input-" + index}>{variableValue}</td>
-                  ))}
-                  {element.logicalFunctions.map(
-                    (logicalFunctionValue, index) => (
-                      <td
-                        key={"output-" + index}
-                        className={styles.outputBit}
-                        onClick={() =>
-                          handleToggleLogicalFunction(rowIndex, index)
-                        }
-                      >
-                        {logicalFunctionValue}
-                      </td>
-                    )
-                  )}
-                </tr>
-              ))}
+              {table.map((element, rowIndex) => {
+                if (isRowData(element))
+                  return (
+                    <tr key={rowIndex}>
+                      <td>{element.index}</td>
+                      {element.variables.map((variableValue, index) => (
+                        <td
+                          key={"input-" + index}
+                          onClick={() => handleCombinRowData(element, index)}
+                        >
+                          {variableValue}
+                        </td>
+                      ))}
+                      {element.logicalFunctions.map(
+                        (logicalFunctionValue, index) => (
+                          <td
+                            key={"output-" + index}
+                            className={styles.outputBit}
+                            onClick={() =>
+                              handleRowToggleLogicalFunction(
+                                element.index,
+                                rowIndex,
+                                index
+                              )
+                            }
+                          >
+                            {logicalFunctionValue}
+                          </td>
+                        )
+                      )}
+                    </tr>
+                  );
+                else if (isRowGroup(element)) {
+                  return (
+                    <tr key={rowIndex}>
+                      <td>{element.indexList.join(", ")}</td>
+                      {combineWithDoNotCare(...element.variablesList).map(
+                        (variableValue, index) => (
+                          <td
+                            key={"input-" + index}
+                            onClick={() =>
+                              variableValue != "x"
+                                ? handleCombinRowGroup(element, index)
+                                : handleDecombineGroupRow(element, index)
+                            }
+                          >
+                            {variableValue}
+                          </td>
+                        )
+                      )}
+                      {element.logicalFunctions.map(
+                        (logicalFunctionValue, index) => (
+                          <td
+                            key={"output-" + index}
+                            className={styles.outputBit}
+                            onClick={() =>
+                              handleGroupToggleLogicalFunction(
+                                element.indexList,
+                                rowIndex,
+                                index
+                              )
+                            }
+                          >
+                            {logicalFunctionValue}
+                          </td>
+                        )
+                      )}
+                    </tr>
+                  );
+                }
+              })}
             </tbody>
           </table>
         </div>
@@ -137,21 +218,28 @@ export default function TruthTable() {
     });
   }
 
-  function handleToggleLogicalFunction(row: number, col: number) {
+  function handleRowToggleLogicalFunction(
+    index: number,
+    row: number,
+    col: number
+  ) {
     switch (table[row].logicalFunctions[col]) {
       case "0":
         dispatch(
-          addMinTerm({ logicalFuncion: logicalFunctions[col], minTerm: row })
+          addMinTerm({ logicalFuncion: logicalFunctions[col], minTerm: index })
         );
         break;
       case "1":
         dispatch(
-          removeMinTerm({ logicalFuncion: logicalFunctions[col], minTerm: row })
+          removeMinTerm({
+            logicalFuncion: logicalFunctions[col],
+            minTerm: index,
+          })
         );
         dispatch(
           addDoNotCare({
             logicalFuncion: logicalFunctions[col],
-            doNotCare: row,
+            doNotCare: index,
           })
         );
         break;
@@ -159,12 +247,272 @@ export default function TruthTable() {
         dispatch(
           removeDoNotCare({
             logicalFuncion: logicalFunctions[col],
-            doNotCare: row,
+            doNotCare: index,
           })
         );
         break;
     }
     dispatch(clearEquations());
     dispatch(clearQMCTables());
+  }
+
+  function handleGroupToggleLogicalFunction(
+    indexList: number[],
+    row: number,
+    col: number
+  ) {
+    switch (table[row].logicalFunctions[col]) {
+      case "0":
+        indexList.forEach((index) =>
+          dispatch(
+            addMinTerm({
+              logicalFuncion: logicalFunctions[col],
+              minTerm: index,
+            })
+          )
+        );
+        break;
+      case "1":
+        indexList.forEach((index) => {
+          dispatch(
+            removeMinTerm({
+              logicalFuncion: logicalFunctions[col],
+              minTerm: index,
+            })
+          );
+          dispatch(
+            addDoNotCare({
+              logicalFuncion: logicalFunctions[col],
+              doNotCare: index,
+            })
+          );
+        });
+
+        break;
+      case "x":
+        indexList.forEach((index) =>
+          dispatch(
+            removeDoNotCare({
+              logicalFuncion: logicalFunctions[col],
+              doNotCare: index,
+            })
+          )
+        );
+        break;
+    }
+    dispatch(clearEquations());
+    dispatch(clearQMCTables());
+  }
+
+  function handleCombinRowData(element: RowData, bitIndex: number) {
+    const combineableRow = table.find((row) => {
+      if (isRowData(row))
+        return (
+          checkBitDifferent(row.variables, element.variables) == 1 &&
+          differentBitIndex(row.variables, element.variables) == bitIndex
+        );
+      else
+        return (
+          checkBitDifferent(
+            combineWithDoNotCare(...row.variablesList),
+            element.variables
+          ) == 1 &&
+          differentBitIndex(
+            combineWithDoNotCare(...row.variablesList),
+            element.variables
+          ) == bitIndex
+        );
+    });
+    if (isRowData(combineableRow)) {
+      setCombinedRows((list) => [
+        ...list,
+        [element.index, combineableRow.index],
+      ]);
+      syncMinTermsAndDoNotCares(
+        element.logicalFunctions,
+        combineableRow?.index
+      );
+    } else {
+      let combinedRowsCopy = [...combinedRows];
+      const i = combinedRows.findIndex(
+        (row) =>
+          JSON.stringify(row) == JSON.stringify(combineableRow?.indexList)
+      );
+      combinedRowsCopy[i] = findAllCombineableRows(
+        element.variables,
+        ...(combineableRow?.variablesList ?? [])
+      );
+      combinedRowsCopy = combinedRowsCopy.filter(
+        (row, index) =>
+          index == i || !includesElements(combinedRowsCopy[i], ...row)
+      );
+      setCombinedRows(combinedRowsCopy);
+      syncMinTermsAndDoNotCares(
+        element.logicalFunctions,
+        ...combinedRowsCopy[i]
+      );
+    }
+  }
+
+  function handleCombinRowGroup(element: RowGroup, bitIndex: number) {
+    const combineableRow = table.find((row) => {
+      if (isRowData(row))
+        return (
+          checkBitDifferent(
+            row.variables,
+            combineWithDoNotCare(...element.variablesList)
+          ) == 1 &&
+          differentBitIndex(
+            row.variables,
+            combineWithDoNotCare(...element.variablesList)
+          ) == bitIndex
+        );
+      else
+        return (
+          checkBitDifferent(
+            combineWithDoNotCare(...row.variablesList),
+            combineWithDoNotCare(...element.variablesList)
+          ) == 1 &&
+          differentBitIndex(
+            combineWithDoNotCare(...row.variablesList),
+            combineWithDoNotCare(...element.variablesList)
+          ) == bitIndex
+        );
+    });
+
+    let combinedRowsCopy = [...combinedRows];
+    const i = combinedRows.findIndex(
+      (row) => JSON.stringify(row) === JSON.stringify(element.indexList)
+    );
+    if (isRowData(combineableRow)) {
+      combinedRowsCopy[i] = findAllCombineableRows(
+        ...element.variablesList,
+        combineableRow.variables
+      );
+      combinedRowsCopy = combinedRowsCopy.filter(
+        (row, index) =>
+          index == i || !includesElements(combinedRowsCopy[i], ...row)
+      );
+      setCombinedRows(combinedRowsCopy);
+      syncMinTermsAndDoNotCares(
+        element.logicalFunctions,
+        ...combinedRowsCopy[i]
+      );
+    } else {
+      combinedRowsCopy[i] = findAllCombineableRows(
+        ...element.variablesList,
+        ...(combineableRow?.variablesList ?? [])
+      );
+      combinedRowsCopy = combinedRowsCopy.filter(
+        (row, index) =>
+          index == i || !includesElements(combinedRowsCopy[i], ...row)
+      );
+      setCombinedRows(combinedRowsCopy);
+      syncMinTermsAndDoNotCares(
+        element.logicalFunctions,
+        ...(combineableRow?.indexList ?? [])
+      );
+    }
+  }
+
+  function findAllCombineableRows(...combineableRowsVariables: binary[][]) {
+    let combineableRows: number[] = [];
+    table.forEach((row) => {
+      if (isRowData(row)) {
+        if (
+          checkBitDifferent(
+            combineWithDoNotCare(...combineableRowsVariables),
+            row.variables
+          ) == 0
+        )
+          combineableRows.push(row.index);
+      } else {
+        if (
+          checkBitDifferent(
+            combineWithDoNotCare(...combineableRowsVariables),
+            combineWithDoNotCare(...row.variablesList)
+          ) == 0
+        )
+          combineableRows = [...combineableRows, ...row.indexList];
+      }
+    });
+    return combineableRows;
+  }
+
+  function syncMinTermsAndDoNotCares(
+    logicalFunctionsValues: binaryWithDoNotCare[],
+    ...rowIndexes: number[]
+  ) {
+    logicalFunctionsValues.forEach((logicalFunctionValue, index) => {
+      rowIndexes.forEach((rowIndex) => {
+        switch (logicalFunctionValue) {
+          case "1":
+            if (logicalFunctions[index].doNotCares.includes(rowIndex))
+              dispatch(
+                removeDoNotCare({
+                  logicalFuncion: logicalFunctions[index],
+                  doNotCare: rowIndex,
+                })
+              );
+            if (!logicalFunctions[index].minTerms.includes(rowIndex))
+              dispatch(
+                addMinTerm({
+                  logicalFuncion: logicalFunctions[index],
+                  minTerm: rowIndex,
+                })
+              );
+            break;
+          case "x":
+            if (logicalFunctions[index].minTerms.includes(rowIndex))
+              dispatch(
+                removeMinTerm({
+                  logicalFuncion: logicalFunctions[index],
+                  minTerm: rowIndex,
+                })
+              );
+            if (!logicalFunctions[index].doNotCares.includes(rowIndex))
+              dispatch(
+                addDoNotCare({
+                  logicalFuncion: logicalFunctions[index],
+                  doNotCare: rowIndex,
+                })
+              );
+            break;
+          case "0":
+            if (logicalFunctions[index].minTerms.includes(rowIndex))
+              dispatch(
+                removeMinTerm({
+                  logicalFuncion: logicalFunctions[index],
+                  minTerm: rowIndex,
+                })
+              );
+            if (logicalFunctions[index].doNotCares.includes(rowIndex))
+              dispatch(
+                removeDoNotCare({
+                  logicalFuncion: logicalFunctions[index],
+                  doNotCare: rowIndex,
+                })
+              );
+            break;
+        }
+      });
+    });
+  }
+
+  function handleDecombineGroupRow(element: RowGroup, bitIndex: number) {
+    const halfA: number[] = [],
+      halfB: number[] = [];
+    element.variablesList.forEach((variable, index) => {
+      if (variable[bitIndex] == "0") halfA.push(element.indexList[index]);
+      else halfB.push(element.indexList[index]);
+    });
+
+    setCombinedRows((list) => [
+      ...list.filter(
+        (row) => JSON.stringify(row) !== JSON.stringify(element.indexList)
+      ),
+      halfA,
+      halfB,
+    ]);
   }
 }
