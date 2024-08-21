@@ -45,10 +45,18 @@
 .outputBit:hover {
   background-color: $success;
   color: $light;
+  border-color: $success !important;
+}
+
+.inputBit {
+  transition: background-color 100ms ease;
+  &:hover {
+    background-color: $primary;
+    color: $light;
+  }
 }
 .solveButtonContainer {
   text-align: end;
-
   display: flex;
   gap: 0.5rem;
   align-items: center;
@@ -63,7 +71,6 @@
     border: 1px solid $primary;
     outline-color: $primary;
   }
-
   button {
     font-size: 0.8rem;
     text-transform: uppercase;

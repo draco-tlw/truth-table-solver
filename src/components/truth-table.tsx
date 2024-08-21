@@ -105,6 +105,7 @@ export default function TruthTable() {
                       {element.variables.map((variableValue, index) => (
                         <td
                           key={"input-" + index}
+                          className={styles.inputBit}
                           onClick={() => handleCombinRowData(element, index)}
                         >
                           {variableValue}
@@ -137,6 +138,7 @@ export default function TruthTable() {
                         (variableValue, index) => (
                           <td
                             key={"input-" + index}
+                            className={styles.inputBit}
                             onClick={() =>
                               variableValue != "x"
                                 ? handleCombinRowGroup(element, index)

@@ -433,13 +433,13 @@ function generateEquationForMaxTerms(
         case "1":
           term.variables.push({
             name: variables[bitIndex],
-            supplement: false,
+            supplement: true,
           });
           break;
         case "0":
           term.variables.push({
             name: variables[bitIndex],
-            supplement: true,
+            supplement: false,
           });
           break;
       }
