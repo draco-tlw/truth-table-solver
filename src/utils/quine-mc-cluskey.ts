@@ -2,6 +2,7 @@ import { binary } from "../types/binary";
 import { Equation, EquationTerm } from "../types/equation";
 import LogicalFunction from "../types/logical-function";
 import { PIData } from "../types/PI-data";
+import { QMCSolveResult } from "../types/qmc-solve-result";
 import {
   QMCCell,
   QMCColumn,
@@ -24,7 +25,7 @@ export default function QuineMcCluskey(
   logicalFunction: LogicalFunction,
   variables: string[],
   solveMethod: SolveMethod
-): { equation: Equation; table: QMCTable } {
+): QMCSolveResult {
   const numberOfVariables = variables.length;
   const { minTerms, maxTerms, doNotCares } =
     extractMinTermsAndMaxTermsAndDoNotCares(logicalFunction, numberOfVariables);

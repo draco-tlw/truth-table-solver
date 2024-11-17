@@ -34,29 +34,29 @@ const LogicalFunctionsSlice = createSlice({
     addMinTerm: (
       state,
       action: PayloadAction<{
-        logicalFuncion: LogicalFunction;
+        logicalFunction: LogicalFunction;
         minTerm: number;
       }>
     ) => {
-      const logicalFuntion = state.logicalFunctions.find(
-        (f) => f.name == action.payload.logicalFuncion.name
+      const logicalFunction = state.logicalFunctions.find(
+        (f) => f.name == action.payload.logicalFunction.name
       );
-      if (logicalFuntion) {
-        logicalFuntion.minTerms.push(action.payload.minTerm);
+      if (logicalFunction) {
+        logicalFunction.minTerms.push(action.payload.minTerm);
       }
     },
     removeMinTerm: (
       state,
       action: PayloadAction<{
-        logicalFuncion: LogicalFunction;
+        logicalFunction: LogicalFunction;
         minTerm: number;
       }>
     ) => {
-      const logicalFuntion = state.logicalFunctions.find(
-        (f) => f.name == action.payload.logicalFuncion.name
+      const logicalFunction = state.logicalFunctions.find(
+        (f) => f.name == action.payload.logicalFunction.name
       );
-      if (logicalFuntion) {
-        logicalFuntion.minTerms = logicalFuntion.minTerms.filter(
+      if (logicalFunction) {
+        logicalFunction.minTerms = logicalFunction.minTerms.filter(
           (m) => m !== action.payload.minTerm
         );
       }
@@ -64,29 +64,29 @@ const LogicalFunctionsSlice = createSlice({
     addDoNotCare: (
       state,
       action: PayloadAction<{
-        logicalFuncion: LogicalFunction;
+        logicalFunction: LogicalFunction;
         doNotCare: number;
       }>
     ) => {
-      const logicalFuntion = state.logicalFunctions.find(
-        (f) => f.name == action.payload.logicalFuncion.name
+      const logicalFunction = state.logicalFunctions.find(
+        (f) => f.name == action.payload.logicalFunction.name
       );
-      if (logicalFuntion) {
-        logicalFuntion.doNotCares.push(action.payload.doNotCare);
+      if (logicalFunction) {
+        logicalFunction.doNotCares.push(action.payload.doNotCare);
       }
     },
     removeDoNotCare: (
       state,
       action: PayloadAction<{
-        logicalFuncion: LogicalFunction;
+        logicalFunction: LogicalFunction;
         doNotCare: number;
       }>
     ) => {
-      const logicalFuntion = state.logicalFunctions.find(
-        (f) => f.name == action.payload.logicalFuncion.name
+      const logicalFunction = state.logicalFunctions.find(
+        (f) => f.name == action.payload.logicalFunction.name
       );
-      if (logicalFuntion) {
-        logicalFuntion.doNotCares = logicalFuntion.doNotCares.filter(
+      if (logicalFunction) {
+        logicalFunction.doNotCares = logicalFunction.doNotCares.filter(
           (d) => d !== action.payload.doNotCare
         );
       }
@@ -104,5 +104,5 @@ export const {
   addDoNotCare,
   removeDoNotCare,
 } = LogicalFunctionsSlice.actions;
-export const selectLogicalFunctins = (state: RootState) =>
+export const selectLogicalFunctions = (state: RootState) =>
   state.logicalFunctions.logicalFunctions;

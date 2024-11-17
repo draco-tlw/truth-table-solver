@@ -83,5 +83,10 @@
     &:hover {
       filter: brightness(0.8);
     }
+
+    &:disabled {
+      background-color: rgba($primary, 0.7);
+      filter: none;
+    }
   }
 }

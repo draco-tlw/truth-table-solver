@@ -1,4 +1,4 @@
-import { selectLogicalFunctins } from "../redux/features/logical-functions-slice";
+import { selectLogicalFunctions } from "../redux/features/logical-functions-slice";
 import { selectQMCTables } from "../redux/features/qmc-tables-slice";
 import { useAppSelector } from "../redux/hooks";
 import styles from "./qmc-tables.module.scss";
@@ -6,7 +6,7 @@ import styles from "./qmc-tables.module.scss";
 import { Fragment } from "react/jsx-runtime";
 
 export default function QMCTables() {
-  const logicalFunctions = useAppSelector(selectLogicalFunctins);
+  const logicalFunctions = useAppSelector(selectLogicalFunctions);
   const qmcTables = useAppSelector(selectQMCTables);
 
   return (

@@ -7,7 +7,6 @@ import {
 } from "../types/table-data";
 import TruthTableSkeleton from "./truth-table-skeleton";
 import styles from "./truth-table.module.scss";
-import QuineMcCluskey from "../utils/quine-mc-cluskey";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { selectVariables } from "../redux/features/variables-slice";
 import {
@@ -15,7 +14,7 @@ import {
   addMinTerm,
   removeDoNotCare,
   removeMinTerm,
-  selectLogicalFunctins,
+  selectLogicalFunctions as selectLogicalFunctions,
 } from "../redux/features/logical-functions-slice";
 import { addEquation, clearEquations } from "../redux/features/equations-slice";
 import { binary, binaryWithDoNotCare } from "../types/binary";
@@ -24,19 +23,21 @@ import {
   addQMCTable,
   clearQMCTables,
 } from "../redux/features/qmc-tables-slice";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { SolveMethod } from "../types/solve-method";
 import combineWithDoNotCare from "../utils/combine-with-do-not-care";
 import differentBitIndex from "../utils/different-bit-index";
 import checkBitDifferent from "../utils/check-bit-different";
 import includesElements from "../utils/includesElements";
+import useQMCSolveWorker from "../hooks/use-qmc-solve-worker";
+import { QMCSolveResult } from "../types/qmc-solve-result";
 
 export default function TruthTable() {
   const [solveMethod, setSolveMethod] = useState<SolveMethod>("min-term");
   const [combinedRows, setCombinedRows] = useState<number[][]>([]);
 
   const variables = useAppSelector(selectVariables);
-  const logicalFunctions = useAppSelector(selectLogicalFunctins);
+  const logicalFunctions = useAppSelector(selectLogicalFunctions);
   const dispatch = useAppDispatch();
 
   const table: TableData = [];
@@ -79,6 +80,17 @@ export default function TruthTable() {
     );
   }, [variables.length]);
 
+  const onFinish = useCallback(
+    (result: QMCSolveResult[]) => {
+      result.forEach((e) => {
+        dispatch(addEquation(e.equation));
+        dispatch(addQMCTable(e.table));
+      });
+    },
+    [dispatch]
+  );
+  const { solve, isComputing } = useQMCSolveWorker(onFinish);
+
   if (variables.length > 0 && logicalFunctions.length > 0)
     return (
       <div className={styles.truthTable}>
@@ -106,7 +118,7 @@ export default function TruthTable() {
                         <td
                           key={"input-" + index}
                           className={styles.inputBit}
-                          onClick={() => handleCombinRowData(element, index)}
+                          onClick={() => handleCombineRowData(element, index)}
                         >
                           {variableValue}
                         </td>
@@ -141,8 +153,8 @@ export default function TruthTable() {
                             className={styles.inputBit}
                             onClick={() =>
                               variableValue != "x"
-                                ? handleCombinRowGroup(element, index)
-                                : handleDecombineGroupRow(element, index)
+                                ? handleCombineRowGroup(element, index)
+                                : handleDecombinGroupRow(element, index)
                             }
                           >
                             {variableValue}
@@ -192,8 +204,8 @@ export default function TruthTable() {
             <option value={"min-term"}>min-term</option>
             <option value={"max-term"}>max-term</option>
           </select>
-          <button type={"button"} onClick={handleSolve}>
-            solve
+          <button type={"button"} onClick={handleSolve} disabled={isComputing}>
+            {isComputing ? "solving" : "solve"}
           </button>
         </div>
       </div>
@@ -209,15 +221,13 @@ export default function TruthTable() {
   function handleSolve() {
     dispatch(clearEquations());
     dispatch(clearQMCTables());
-    logicalFunctions.forEach((logicalFunction) => {
-      const { equation, table } = QuineMcCluskey(
+    solve(
+      logicalFunctions.map((logicalFunction) => ({
         logicalFunction,
         variables,
-        solveMethod
-      );
-      dispatch(addEquation(equation));
-      dispatch(addQMCTable(table));
-    });
+        solveMethod,
+      }))
+    );
   }
 
   function handleRowToggleLogicalFunction(
@@ -228,19 +238,19 @@ export default function TruthTable() {
     switch (table[row].logicalFunctions[col]) {
       case "0":
         dispatch(
-          addMinTerm({ logicalFuncion: logicalFunctions[col], minTerm: index })
+          addMinTerm({ logicalFunction: logicalFunctions[col], minTerm: index })
         );
         break;
       case "1":
         dispatch(
           removeMinTerm({
-            logicalFuncion: logicalFunctions[col],
+            logicalFunction: logicalFunctions[col],
             minTerm: index,
           })
         );
         dispatch(
           addDoNotCare({
-            logicalFuncion: logicalFunctions[col],
+            logicalFunction: logicalFunctions[col],
             doNotCare: index,
           })
         );
@@ -248,7 +258,7 @@ export default function TruthTable() {
       case "x":
         dispatch(
           removeDoNotCare({
-            logicalFuncion: logicalFunctions[col],
+            logicalFunction: logicalFunctions[col],
             doNotCare: index,
           })
         );
@@ -268,7 +278,7 @@ export default function TruthTable() {
         indexList.forEach((index) =>
           dispatch(
             addMinTerm({
-              logicalFuncion: logicalFunctions[col],
+              logicalFunction: logicalFunctions[col],
               minTerm: index,
             })
           )
@@ -278,13 +288,13 @@ export default function TruthTable() {
         indexList.forEach((index) => {
           dispatch(
             removeMinTerm({
-              logicalFuncion: logicalFunctions[col],
+              logicalFunction: logicalFunctions[col],
               minTerm: index,
             })
           );
           dispatch(
             addDoNotCare({
-              logicalFuncion: logicalFunctions[col],
+              logicalFunction: logicalFunctions[col],
               doNotCare: index,
             })
           );
@@ -295,7 +305,7 @@ export default function TruthTable() {
         indexList.forEach((index) =>
           dispatch(
             removeDoNotCare({
-              logicalFuncion: logicalFunctions[col],
+              logicalFunction: logicalFunctions[col],
               doNotCare: index,
             })
           )
@@ -306,8 +316,8 @@ export default function TruthTable() {
     dispatch(clearQMCTables());
   }
 
-  function handleCombinRowData(element: RowData, bitIndex: number) {
-    const combineableRow = table.find((row) => {
+  function handleCombineRowData(element: RowData, bitIndex: number) {
+    const combinableRow = table.find((row) => {
       if (isRowData(row))
         return (
           checkBitDifferent(row.variables, element.variables) == 1 &&
@@ -325,24 +335,20 @@ export default function TruthTable() {
           ) == bitIndex
         );
     });
-    if (isRowData(combineableRow)) {
+    if (isRowData(combinableRow)) {
       setCombinedRows((list) => [
         ...list,
-        [element.index, combineableRow.index],
+        [element.index, combinableRow.index],
       ]);
-      syncMinTermsAndDoNotCares(
-        element.logicalFunctions,
-        combineableRow?.index
-      );
+      syncMinTermsAndDoNotCares(element.logicalFunctions, combinableRow?.index);
     } else {
       let combinedRowsCopy = [...combinedRows];
       const i = combinedRows.findIndex(
-        (row) =>
-          JSON.stringify(row) == JSON.stringify(combineableRow?.indexList)
+        (row) => JSON.stringify(row) == JSON.stringify(combinableRow?.indexList)
       );
-      combinedRowsCopy[i] = findAllCombineableRows(
+      combinedRowsCopy[i] = findAllCombinableRows(
         element.variables,
-        ...(combineableRow?.variablesList ?? [])
+        ...(combinableRow?.variablesList ?? [])
       );
       combinedRowsCopy = combinedRowsCopy.filter(
         (row, index) =>
@@ -356,8 +362,8 @@ export default function TruthTable() {
     }
   }
 
-  function handleCombinRowGroup(element: RowGroup, bitIndex: number) {
-    const combineableRow = table.find((row) => {
+  function handleCombineRowGroup(element: RowGroup, bitIndex: number) {
+    const combinableRow = table.find((row) => {
       if (isRowData(row))
         return (
           checkBitDifferent(
@@ -386,10 +392,10 @@ export default function TruthTable() {
     const i = combinedRows.findIndex(
       (row) => JSON.stringify(row) === JSON.stringify(element.indexList)
     );
-    if (isRowData(combineableRow)) {
-      combinedRowsCopy[i] = findAllCombineableRows(
+    if (isRowData(combinableRow)) {
+      combinedRowsCopy[i] = findAllCombinableRows(
         ...element.variablesList,
-        combineableRow.variables
+        combinableRow.variables
       );
       combinedRowsCopy = combinedRowsCopy.filter(
         (row, index) =>
@@ -401,9 +407,9 @@ export default function TruthTable() {
         ...combinedRowsCopy[i]
       );
     } else {
-      combinedRowsCopy[i] = findAllCombineableRows(
+      combinedRowsCopy[i] = findAllCombinableRows(
         ...element.variablesList,
-        ...(combineableRow?.variablesList ?? [])
+        ...(combinableRow?.variablesList ?? [])
       );
       combinedRowsCopy = combinedRowsCopy.filter(
         (row, index) =>
@@ -412,33 +418,33 @@ export default function TruthTable() {
       setCombinedRows(combinedRowsCopy);
       syncMinTermsAndDoNotCares(
         element.logicalFunctions,
-        ...(combineableRow?.indexList ?? [])
+        ...(combinableRow?.indexList ?? [])
       );
     }
   }
 
-  function findAllCombineableRows(...combineableRowsVariables: binary[][]) {
-    let combineableRows: number[] = [];
+  function findAllCombinableRows(...combinableRowsVariables: binary[][]) {
+    let combinableRows: number[] = [];
     table.forEach((row) => {
       if (isRowData(row)) {
         if (
           checkBitDifferent(
-            combineWithDoNotCare(...combineableRowsVariables),
+            combineWithDoNotCare(...combinableRowsVariables),
             row.variables
           ) == 0
         )
-          combineableRows.push(row.index);
+          combinableRows.push(row.index);
       } else {
         if (
           checkBitDifferent(
-            combineWithDoNotCare(...combineableRowsVariables),
+            combineWithDoNotCare(...combinableRowsVariables),
             combineWithDoNotCare(...row.variablesList)
           ) == 0
         )
-          combineableRows = [...combineableRows, ...row.indexList];
+          combinableRows = [...combinableRows, ...row.indexList];
       }
     });
-    return combineableRows;
+    return combinableRows;
   }
 
   function syncMinTermsAndDoNotCares(
@@ -452,14 +458,14 @@ export default function TruthTable() {
             if (logicalFunctions[index].doNotCares.includes(rowIndex))
               dispatch(
                 removeDoNotCare({
-                  logicalFuncion: logicalFunctions[index],
+                  logicalFunction: logicalFunctions[index],
                   doNotCare: rowIndex,
                 })
               );
             if (!logicalFunctions[index].minTerms.includes(rowIndex))
               dispatch(
                 addMinTerm({
-                  logicalFuncion: logicalFunctions[index],
+                  logicalFunction: logicalFunctions[index],
                   minTerm: rowIndex,
                 })
               );
@@ -468,14 +474,14 @@ export default function TruthTable() {
             if (logicalFunctions[index].minTerms.includes(rowIndex))
               dispatch(
                 removeMinTerm({
-                  logicalFuncion: logicalFunctions[index],
+                  logicalFunction: logicalFunctions[index],
                   minTerm: rowIndex,
                 })
               );
             if (!logicalFunctions[index].doNotCares.includes(rowIndex))
               dispatch(
                 addDoNotCare({
-                  logicalFuncion: logicalFunctions[index],
+                  logicalFunction: logicalFunctions[index],
                   doNotCare: rowIndex,
                 })
               );
@@ -484,14 +490,14 @@ export default function TruthTable() {
             if (logicalFunctions[index].minTerms.includes(rowIndex))
               dispatch(
                 removeMinTerm({
-                  logicalFuncion: logicalFunctions[index],
+                  logicalFunction: logicalFunctions[index],
                   minTerm: rowIndex,
                 })
               );
             if (logicalFunctions[index].doNotCares.includes(rowIndex))
               dispatch(
                 removeDoNotCare({
-                  logicalFuncion: logicalFunctions[index],
+                  logicalFunction: logicalFunctions[index],
                   doNotCare: rowIndex,
                 })
               );
@@ -501,7 +507,7 @@ export default function TruthTable() {
     });
   }
 
-  function handleDecombineGroupRow(element: RowGroup, bitIndex: number) {
+  function handleDecombinGroupRow(element: RowGroup, bitIndex: number) {
     const halfA: number[] = [],
       halfB: number[] = [];
     element.variablesList.forEach((variable, index) => {

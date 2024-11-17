@@ -10,7 +10,7 @@ import {
 import {
   addLogicalFunction,
   removeLogicalFunction,
-  selectLogicalFunctins,
+  selectLogicalFunctions,
   updateLogicalFunctions,
 } from "../redux/features/logical-functions-slice";
 import { clearEquations } from "../redux/features/equations-slice";
@@ -18,7 +18,7 @@ import { clearQMCTables } from "../redux/features/qmc-tables-slice";
 
 export default function GenerateTable() {
   const variables = useAppSelector(selectVariables);
-  const logicalFunctions = useAppSelector(selectLogicalFunctins);
+  const logicalFunctions = useAppSelector(selectLogicalFunctions);
   const dispatch = useAppDispatch();
 
   const [variableTextInput, setVariableTextInput] = useState("");
