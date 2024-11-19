@@ -1,30 +1,83 @@
-# React + TypeScript + Vite
+# Truth Table Solver
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Truth Table Solver is a web application built with Vite, React, and TypeScript. It helps users generate and solve truth tables for logical expressions, simplifying equations and showing the solving process using the Quine-McCluskey method.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Dynamic Truth Table Generation**:
 
-## Expanding the ESLint configuration
+  - Accepts variable names and function expressions.
+  - Dynamically generates the truth table based on the input.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- **Interactive Table Editing**:
 
-- Configure the top-level `parserOptions` property like this:
+  - Toggle values (0, 1, X) in function columns.
+  - Combine rows in variable columns by bit difference using "X" for unselected states.
 
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: "latest",
-    sourceType: "module",
-    project: ["./tsconfig.json", "./tsconfig.node.json", "./tsconfig.app.json"],
-    tsconfigRootDir: __dirname,
-  },
-};
-```
+- **Solve Methods**:
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+  - Min-term and max-term methods to simplify logical expressions.
+
+- **Results Display**:
+  - Simplified equations for each function.
+  - Quine-McCluskey tables to show the solving process.
+
+## Live Demo
+
+Try the application live: [Truth Table Solver](https://mr-alimuhammadi.github.io/truth-table-solver/)
+
+## Installation
+
+1. Clone the repository:
+   ```bash
+   https://github.com/mr-alimuhammadi/truth-table-solver.git
+   ```
+2. Navigate to the project directory:
+   ```bash
+   cd truth-table-solver
+   ```
+3. Install dependencies:
+   ```bash
+   npm install
+   ```
+4. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+## Usage
+
+1. Input the variable and function names.
+2. Generate the truth table.
+3. Edit table cells as needed:
+   - Click on function cells to toggle values.
+   - Click on variable cells to combine rows based on bit differences.
+4. Select a solve method (min-term or max-term).
+5. Click the "Solve" button to calculate:
+   - Simplified equations.
+   - Quine-McCluskey tables.
+
+## Screenshots
+
+_(Add screenshots here)_
+
+## Technologies Used
+
+- **Vite**: Fast development build tool.
+- **React**: Frontend library for building user interfaces.
+- **TypeScript**: Strongly typed JavaScript.
+- **CSS**: For styling the application.
+
+## License
+
+This project is licensed under the MIT License. See the `LICENSE` file for details.
+
+## Contributions
+
+Contributions are welcome! Feel free to fork the project, submit issues, or open pull requests.
+
+## Contact
+
+For any inquiries or suggestions, please reach out to [your-email@example.com].
+
+---
