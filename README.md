@@ -66,7 +66,7 @@ _(Add screenshots here)_
 - **Vite**: Fast development build tool.
 - **React**: Frontend library for building user interfaces.
 - **TypeScript**: Strongly typed JavaScript.
-- **CSS**: For styling the application.
+- **SASS**: For styling the application.
 
 ## License
 
