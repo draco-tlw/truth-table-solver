@@ -78,6 +78,6 @@ Contributions are welcome! Feel free to fork the project, submit issues, or open
 
 ## Contact
 
-For any inquiries or suggestions, please reach out to [your-email@example.com].
+For any inquiries or suggestions, please reach out to [mr.alimuhammdi@gmail.com].
 
 ---
