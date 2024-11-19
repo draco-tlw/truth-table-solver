@@ -4,7 +4,7 @@ export default function QMCTest({ table }: { table: QMCTable }) {
   return (
     <div>
       <h1>Quine McCluskey Test</h1>
-      {table.map((column, index) => (
+      {table.columns.map((column, index) => (
         <table
           key={index}
           style={{ border: "4px solid red", width: "100%", margin: "1rem" }}
@@ -17,7 +17,7 @@ export default function QMCTest({ table }: { table: QMCTable }) {
                     colSpan={3}
                     style={{ backgroundColor: "gray", textAlign: "center" }}
                   >
-                    {group.numberOf1Bit}
+                    {group.numberOfTargetBit}
                   </td>
                 </tr>
                 {group.cells.map((cell, index) => (
