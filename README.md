@@ -57,10 +57,6 @@ Try the application live: [Truth Table Solver](https://mr-alimuhammadi.github.io
    - Simplified equations.
    - Quine-McCluskey tables.
 
-## Screenshots
-
-_(Add screenshots here)_
-
 ## Technologies Used
 
 - **Vite**: Fast development build tool.
