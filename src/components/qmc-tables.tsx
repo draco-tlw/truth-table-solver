@@ -1,11 +1,14 @@
+import { FaCheck } from "react-icons/fa";
 import { selectLogicalFunctions } from "../redux/features/logical-functions-slice";
 import { selectPIsAndEPIs } from "../redux/features/pis-and-epis-slice";
 import { selectQMCTables } from "../redux/features/qmc-tables-slice";
 import { useAppSelector } from "../redux/hooks";
 import { PIData } from "../types/PI-data";
+import { SolveMethod } from "../types/solve-method";
 import styles from "./qmc-tables.module.scss";
 
 import { Fragment } from "react/jsx-runtime";
+import { FaXmark } from "react-icons/fa6";
 
 export default function QMCTables() {
   const logicalFunctions = useAppSelector(selectLogicalFunctions);
@@ -62,7 +65,13 @@ export default function QMCTables() {
                                 )}
                                 <td>{cell.MTOrDCNumbers.join(", ")}</td>
                                 <td>{cell.binaryNumber.join("")}</td>
-                                <td>{cell.matched ? "yes" : "no"}</td>
+                                <td>
+                                  {cell.matched ? (
+                                    <FaCheck size={16 * 0.75} />
+                                  ) : (
+                                    <FaXmark size={16 * 0.75} />
+                                  )}
+                                </td>
                               </tr>
                             ))}
                           </Fragment>
@@ -74,8 +83,12 @@ export default function QMCTables() {
               ))}
             </div>
             <div className={styles.PIsAndEPIsTableContainer}>
-              <div className={styles.title}>EPIs</div>
-              {PIsAndEPIsTable(PIsAndEPIs[i].PIs, PIsAndEPIs[i].EPIs)}
+              <div className={styles.title}>PIs</div>
+              {PIsAndEPIsTable(
+                PIsAndEPIs[i].PIs,
+                PIsAndEPIs[i].EPIs,
+                table.solveMethod
+              )}
             </div>
           </div>
         ))}
@@ -83,7 +96,11 @@ export default function QMCTables() {
     </div>
   );
 
-  function PIsAndEPIsTable(PIs: PIData[], EPIs: PIData[]) {
+  function PIsAndEPIsTable(
+    PIs: PIData[],
+    EPIs: PIData[],
+    solveMethod: SolveMethod
+  ) {
     const MTs = [...new Set(PIs.map((pi) => pi.MTNumber).flat())];
 
     return (
@@ -92,8 +109,13 @@ export default function QMCTables() {
           <tr>
             <td></td>
             {MTs.map((MT) => (
-              <th>m{MT}</th>
+              <th>
+                {solveMethod === "min-term" ? "m" : "M"}
+
+                <sub>{MT}</sub>
+              </th>
             ))}
+            <td>EPI</td>
           </tr>
         </thead>
         <tbody>
@@ -113,6 +135,15 @@ export default function QMCTables() {
                   {PI.MTNumber.findIndex((e) => e === MT) !== -1 ? "x" : ""}
                 </td>
               ))}
+              <td>
+                {EPIs.findIndex(
+                  (EPI) => JSON.stringify(EPI) === JSON.stringify(PI)
+                ) !== -1 ? (
+                  <FaCheck size={16 * 0.75} />
+                ) : (
+                  <FaXmark size={16 * 0.75} />
+                )}
+              </td>
             </tr>
           ))}
         </tbody>
