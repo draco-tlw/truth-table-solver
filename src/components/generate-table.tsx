@@ -15,6 +15,7 @@ import {
 } from "../redux/features/logical-functions-slice";
 import { clearEquations } from "../redux/features/equations-slice";
 import { clearQMCTables } from "../redux/features/qmc-tables-slice";
+import { clearPIsAndEPIs } from "../redux/features/pis-and-epis-slice";
 
 export default function GenerateTable() {
   const variables = useAppSelector(selectVariables);
@@ -139,6 +140,7 @@ export default function GenerateTable() {
       setVariableTextInput("");
       dispatch(clearEquations());
       dispatch(clearQMCTables());
+      dispatch(clearPIsAndEPIs());
     }
   }
   function handleAddLogicalFunction() {
@@ -153,6 +155,7 @@ export default function GenerateTable() {
       setFunctionTextInput("");
       dispatch(clearEquations());
       dispatch(clearQMCTables());
+      dispatch(clearPIsAndEPIs());
     }
   }
 
@@ -162,10 +165,12 @@ export default function GenerateTable() {
     dispatch(updateLogicalFunctions(inputsLen));
     dispatch(clearEquations());
     dispatch(clearQMCTables());
+    dispatch(clearPIsAndEPIs());
   }
   function handleRemoveLogicalFunction(logicalFunction: LogicalFunction) {
     dispatch(removeLogicalFunction(logicalFunction));
     dispatch(clearEquations());
     dispatch(clearQMCTables());
+    dispatch(clearPIsAndEPIs());
   }
 }

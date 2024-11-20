@@ -1,6 +1,8 @@
 import { selectLogicalFunctions } from "../redux/features/logical-functions-slice";
+import { selectPIsAndEPIs } from "../redux/features/pis-and-epis-slice";
 import { selectQMCTables } from "../redux/features/qmc-tables-slice";
 import { useAppSelector } from "../redux/hooks";
+import { PIData } from "../types/PI-data";
 import styles from "./qmc-tables.module.scss";
 
 import { Fragment } from "react/jsx-runtime";
@@ -8,6 +10,7 @@ import { Fragment } from "react/jsx-runtime";
 export default function QMCTables() {
   const logicalFunctions = useAppSelector(selectLogicalFunctions);
   const qmcTables = useAppSelector(selectQMCTables);
+  const PIsAndEPIs = useAppSelector(selectPIsAndEPIs);
 
   return (
     <div
@@ -70,9 +73,50 @@ export default function QMCTables() {
                 </div>
               ))}
             </div>
+            <div className={styles.PIsAndEPIsTableContainer}>
+              <div className={styles.title}>EPIs</div>
+              {PIsAndEPIsTable(PIsAndEPIs[i].PIs, PIsAndEPIs[i].EPIs)}
+            </div>
           </div>
         ))}
       </div>
     </div>
   );
+
+  function PIsAndEPIsTable(PIs: PIData[], EPIs: PIData[]) {
+    const MTs = [...new Set(PIs.map((pi) => pi.MTNumber).flat())];
+
+    return (
+      <table>
+        <thead>
+          <tr>
+            <td></td>
+            {MTs.map((MT) => (
+              <th>m{MT}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {PIs.map((PI) => (
+            <tr
+              className={
+                EPIs.findIndex(
+                  (EPI) => JSON.stringify(EPI) === JSON.stringify(PI)
+                ) !== -1
+                  ? styles.EPI
+                  : styles.PI
+              }
+            >
+              <th>{PI.binary}</th>
+              {MTs.map((MT) => (
+                <td>
+                  {PI.MTNumber.findIndex((e) => e === MT) !== -1 ? "x" : ""}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    );
+  }
 }

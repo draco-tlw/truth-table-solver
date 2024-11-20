@@ -47,6 +47,8 @@ export default function QuineMcCluskey(
         columns: [],
         solveMethod: solveMethod,
       },
+      PIs: [],
+      EPIs: [],
     };
   else if (minTerms.length == 0) {
     return {
@@ -65,6 +67,8 @@ export default function QuineMcCluskey(
         columns: [],
         solveMethod: solveMethod,
       },
+      PIs: [],
+      EPIs: [],
     };
   }
 
@@ -123,7 +127,7 @@ export default function QuineMcCluskey(
     solveMethod: table.solveMethod,
   };
 
-  return { equation, table: cleenTable };
+  return { equation, table: cleenTable, PIs, EPIs };
 }
 
 function extractMinTermsAndMaxTermsAndDoNotCares(

@@ -3,6 +3,7 @@ import { variablesReducer } from "./features/variables-slice";
 import { logicalFunctionsReducer } from "./features/logical-functions-slice";
 import { equationsReducer } from "./features/equations-slice";
 import { qmcTablesReducer } from "./features/qmc-tables-slice";
+import { PIsAndEPIsReducer } from "./features/pis-and-epis-slice";
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
     logicalFunctions: logicalFunctionsReducer,
     equations: equationsReducer,
     qmcTables: qmcTablesReducer,
+    PIsAndEPIs: PIsAndEPIsReducer,
   },
 });
 

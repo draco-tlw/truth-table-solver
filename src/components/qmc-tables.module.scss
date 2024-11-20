@@ -73,3 +73,30 @@
   font-weight: bold;
   color: $orange;
 }
+
+.PIsAndEPIsTableContainer {
+  .title {
+    background-color: $success;
+    padding: 0.5rem;
+    color: white;
+    text-align: center;
+    font-size: 1.5rem;
+  }
+  margin-top: 1rem;
+  & > table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  & > table > thead > tr > td {
+    text-wrap: nowrap;
+  }
+  & > table td,
+  & > table th {
+    padding: 0.5rem;
+    text-align: center;
+    border: 2px solid $success;
+  }
+}
+.EPI {
+  background-color: rgba($success, 0.25);
+}

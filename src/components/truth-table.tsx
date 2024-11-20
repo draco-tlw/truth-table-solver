@@ -31,6 +31,10 @@ import checkBitDifferent from "../utils/check-bit-different";
 import includesElements from "../utils/includesElements";
 import useQMCSolveWorker from "../hooks/use-qmc-solve-worker";
 import { QMCSolveResult } from "../types/qmc-solve-result";
+import {
+  addPIsAndEPIs,
+  clearPIsAndEPIs,
+} from "../redux/features/pis-and-epis-slice";
 
 export default function TruthTable() {
   const [solveMethod, setSolveMethod] = useState<SolveMethod>("min-term");
@@ -85,6 +89,7 @@ export default function TruthTable() {
       result.forEach((e) => {
         dispatch(addEquation(e.equation));
         dispatch(addQMCTable(e.table));
+        dispatch(addPIsAndEPIs({ PIs: e.PIs, EPIs: e.EPIs }));
       });
     },
     [dispatch]
@@ -197,6 +202,7 @@ export default function TruthTable() {
                 setSolveMethod(e.target.value);
                 dispatch(clearEquations());
                 dispatch(clearQMCTables());
+                dispatch(clearPIsAndEPIs());
               }
             }}
             value={solveMethod}
@@ -221,6 +227,7 @@ export default function TruthTable() {
   function handleSolve() {
     dispatch(clearEquations());
     dispatch(clearQMCTables());
+    dispatch(clearPIsAndEPIs());
     solve(
       logicalFunctions.map((logicalFunction) => ({
         logicalFunction,
@@ -266,6 +273,7 @@ export default function TruthTable() {
     }
     dispatch(clearEquations());
     dispatch(clearQMCTables());
+    dispatch(clearPIsAndEPIs());
   }
 
   function handleGroupToggleLogicalFunction(
@@ -314,6 +322,7 @@ export default function TruthTable() {
     }
     dispatch(clearEquations());
     dispatch(clearQMCTables());
+    dispatch(clearPIsAndEPIs());
   }
 
   function handleCombineRowData(element: RowData, bitIndex: number) {
