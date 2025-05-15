@@ -21,7 +21,7 @@ export default function Footer() {
             </svg>
           </span>
         </a>
-        <a href="https://github.com/mr-alimuhammadi" target={"_blank"}>
+        <a href="https://github.com/draco-tlw" target={"_blank"}>
           <span>Github</span>
           <span className={styles.icon}>
             <svg

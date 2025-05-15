@@ -24,7 +24,7 @@ Truth Table Solver is a web application built with Vite, React, and TypeScript. 
 
 ## Live Demo
 
-Try the application live: [Truth Table Solver](https://mr-alimuhammadi.github.io/truth-table-solver/)
+Try the application live: [Truth Table Solver](https://draco-tlw.github.io/truth-table-solver/)
 
 ## Installation
 
